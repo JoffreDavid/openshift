@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'authors-app'
+    scrape_interval: 18s
+    metrics_path: '/q/metrics'
+    static_configs:
+      - targets: ['authors:8080']
+
+  - job_name: 'books-app'
+    scrape_interval: 18s
+    metrics_path: '/q/metrics'
+    static_configs:
+      - targets: ['books:8080']
+
+  - job_name: 'customers-app'
+    scrape_interval: 18s
+    metrics_path: '/q/metrics'
+    static_configs:
+      - targets: ['customers:8080']
+
+  - job_name: 'proxy'
+    scrape_interval: 18s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['proxy:8082']
+
+  - job_name: 'postgresql'
+    scrape_interval: 18s
+    static_configs:
+      - targets: ['postgresql-exporter:9187']

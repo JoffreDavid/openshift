@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+        - name: traefik
+          image: traefik:3.7.5
+          args:
+            - "--api.insecure=true"
+            - "--api.dashboard=true"
+            - "--entryPoints.http.address=:8000"
+            - "--entryPoints.traefik.address=:8080"
+            - "--entryPoints.metrics.address=:8082"
+            - "--providers.consulCatalog=true"
+            - "--providers.consulCatalog.endpoint.address=consul:8500"
+            - "--providers.consulCatalog.exposedByDefault=false"
+            - "--providers.consulCatalog.refreshInterval=5s"
+            - "--metrics.prometheus.entryPoint=metrics"
+          ports:
+            - containerPort: 8000
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+spec:
+  selector:
+    app: proxy
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8000

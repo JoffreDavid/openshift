@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-customers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-customers
+  template:
+    metadata:
+      labels:
+        app: app-customers
+    spec:
+      containers:
+        - name: app-customers
+          image: joffredavid1/app-customers:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: books-config
+                  key: APP_PORT
+            - name: SPRING_CLOUD_CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: books-config
+                  key: CONSUL_HOST
+            - name: SPRING_CLOUD_CONSUL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: books-config
+                  key: CONSUL_PORT
+            - name: SPRING_CLOUD_CONSUL_DISCOVERY_PREFER_IP_ADDRESS
+              value: "true"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: books-config
+                  key: DB_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: books-secret
+                  key: DB_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: books-secret
+                  key: DB_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-customers
+spec:
+  selector:
+    app: app-customers
+  ports:
+    - port: 8080
+      targetPort: 8080

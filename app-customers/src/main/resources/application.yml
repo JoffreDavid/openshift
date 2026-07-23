@@ -1,0 +1,46 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: app-customers
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-path: /q/health
+        tags:
+          - framework=springboot-4.0.6
+          - traefik.enable=true
+          - traefik.http.routers.router-app-customers.rule=PathPrefix(`/app-customers`)
+          - traefik.http.routers.router-app-customers.middlewares=middleware-customers
+          - traefik.http.middlewares.middleware-customers.stripprefix.prefixes=/app-customers
+
+  datasource:
+    url: jdbc:postgresql://db-server:5432/books2026
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  endpoints:
+    web:
+      base-path: /q
+      path-mapping:
+        prometheus: metrics
+      exposure:
+        include: health,info,metrics,prometheus
+
