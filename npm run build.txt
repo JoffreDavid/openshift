@@ -1,0 +1,34 @@
+npm run build
+docker build -t joffredavid1/app-web:latest .
+docker push joffredavid1/app-web:latest
+docker build -f src/main/docker/Dockerfile.jvm -t joffredavid1/app-authors:latest .
+docker push joffredavid1/app-authors:latest 
+
+secret.yaml config.yaml
+
+postgres.yaml  consul.yaml
+
+ Microservicios (Backends)
+
+
+traefik.yaml frontend 
+
+
+oc expose svc proxy
+oc get routes 
+oc get pods
+oc port-forward deployment/proxy 8080:8080
+
+verificación:
+consul
+curl -s http://localhost:8500/v1/agent/services 
+Traefik con 2 instancias
+for /l %i in (1, 1, 6) do @curl -s http://localhost:8080/app-todos/instance & echo.
+
+
+Alta disponibilidad
+docker compose stop app-todos-1
+for /l %i in (1, 1, 4) do @curl -s http://localhost:8080/app-todos/todos & echo.
+
+Prometheus
+http_server_requests_seconds_count{instance="app-todos-2:8080"}
